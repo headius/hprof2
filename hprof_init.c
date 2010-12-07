@@ -2029,19 +2029,21 @@ Agent_OnLoad(JavaVM *vm, char *options, void *reserved)
     if ( gdata->bci ) {
 
         /* Load the library or get the handle to it */
-        gdata->java_crw_demo_library = load_library("java_crw_demo");
+      //gdata->java_crw_demo_library = load_library("java_crw_demo");
 
         { /* "java_crw_demo" */
-            static char *symbols[]  = JAVA_CRW_DEMO_SYMBOLS;
+            // static char *symbols[]  = JAVA_CRW_DEMO_SYMBOLS;
             gdata->java_crw_demo_function =
-                   lookup_library_symbol(gdata->java_crw_demo_library,
-                              symbols, (int)(sizeof(symbols)/sizeof(char*)));
+                    java_crw_demo;
+                   // lookup_library_symbol(gdata->java_crw_demo_library,
+                              // symbols, (int)(sizeof(symbols)/sizeof(char*)));
         }
         { /* "java_crw_demo_classname" */
-            static char *symbols[] = JAVA_CRW_DEMO_CLASSNAME_SYMBOLS;
+            // static char *symbols[] = JAVA_CRW_DEMO_CLASSNAME_SYMBOLS;
             gdata->java_crw_demo_classname_function =
-                   lookup_library_symbol(gdata->java_crw_demo_library,
-                              symbols, (int)(sizeof(symbols)/sizeof(char*)));
+                    java_crw_demo_classname;
+                   // lookup_library_symbol(gdata->java_crw_demo_library,
+                              // symbols, (int)(sizeof(symbols)/sizeof(char*)));
         }
     }
 

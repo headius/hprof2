@@ -719,40 +719,12 @@ io_write_file_header(void)
     } else if ((!gdata->cpu_timing) || (!gdata->old_timing_format)) {
         /* We don't want the prelude file for the old prof output format */
         time_t t;
-        char prelude_file[FILENAME_MAX];
         int prelude_fd;
         int nbytes;
 
         t = time(0);
 
-        md_get_prelude_path(prelude_file, sizeof(prelude_file), PRELUDE_FILE);
-
-        prelude_fd = md_open(prelude_file);
-        if (prelude_fd < 0) {
-            char buf[FILENAME_MAX+80];
-
-            (void)md_snprintf(buf, sizeof(buf), "Can't open %s", prelude_file);
-            buf[sizeof(buf)-1] = 0;
-            HPROF_ERROR(JNI_TRUE, buf);
-        }
-
-        write_printf("%s, created %s\n", gdata->header, ctime(&t));
-
-        do {
-            char buf[1024]; /* File is small, small buffer ok here */
-
-            nbytes = md_read(prelude_fd, buf, sizeof(buf));
-            if ( nbytes < 0 ) {
-                system_error("read", nbytes, errno);
-                break;
-            }
-            if (nbytes == 0) {
-                break;
-            }
-            write_raw(buf, nbytes);
-        } while ( nbytes > 0 );
-
-        md_close(prelude_fd);
+        write_printf(PRELUDE);
 
         write_printf("\n--------\n\n");
 

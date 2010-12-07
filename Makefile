@@ -69,7 +69,8 @@ SOURCES= \
     hprof_trace.c	\
     hprof_tracker.c	\
     hprof_util.c	\
-    hprof_md.c
+    hprof_md.c \
+    java_crw_demo.c
 
 JAVA_SOURCES=Tracker.java
 
@@ -152,6 +153,8 @@ ifeq ($(OSNAME), darwin)
     COMMON_FLAGS+= -D_REENTRANT
     # To make hprof logging code available
     COMMON_FLAGS+= -DHPROF_LOGGING
+    # fat binary
+    COMMON_FLAGS+= -arch i386 -arch x86_64
     ifeq ($(OPT), true)
         CFLAGS=-O2 $(COMMON_FLAGS)  -DNDEBUG
     else
@@ -163,7 +166,7 @@ ifeq ($(OSNAME), darwin)
     LIBRARY=lib$(LIBNAME).jnilib
     LDFLAGS=-shared
     # Libraries we are dependent on
-    LIBRARIES= -ldl -lc
+    LIBRARIES=-ldl -lc
     # Building a shared library
     LINK_SHARED=$(LINK.c) -shared -o $@
 endif
