@@ -34,10 +34,10 @@
 # Sample GNU Makefile for building 
 #
 #  Example uses:    
-#       gnumake JDK=<java_home> OSNAME=solaris [OPT=true] [LIBARCH=sparc]
-#       gnumake JDK=<java_home> OSNAME=solaris [OPT=true] [LIBARCH=sparcv9]
-#       gnumake JDK=<java_home> OSNAME=linux   [OPT=true]
-#       gnumake JDK=<java_home> OSNAME=win32   [OPT=true]
+#       gnumake JDK=<java_home> [OPT=true] [LIBARCH=sparc]
+#       gnumake JDK=<java_home> [OPT=true] [LIBARCH=sparcv9]
+#       gnumake JDK=<java_home> [OPT=true]
+#       gnumake JDK=<java_home> [OPT=true]
 #
 ########################################################################
 
@@ -74,11 +74,17 @@ SOURCES= \
 
 JAVA_SOURCES=Tracker.java
 
+BUILD_OS := $(strip $(shell uname -s | tr '[:upper:]' '[:lower:]'))
+OS ?= $(BUILD_OS)
+ifeq ($(OS),sunos)
+  OS = solaris
+endif
+
 # Name of jar file that needs to be created
 #JARFILE=hprof.jar
 
 # Solaris Sun C Compiler Version 5.5
-ifeq ($(OSNAME), solaris)
+ifeq ($(OS), solaris)
     # Sun Solaris Compiler options needed
     COMMON_FLAGS=-mt -KPIC
     # Options that help find errors
@@ -110,7 +116,7 @@ ifeq ($(OSNAME), solaris)
 endif
 
 # Linux GNU C Compiler
-ifeq ($(OSNAME), linux)
+ifeq ($(OS), linux)
     # GNU Compiler options needed to build it
     COMMON_FLAGS=-fno-strict-aliasing -fPIC -fno-omit-frame-pointer
     # Options that help find errors
@@ -140,7 +146,7 @@ ifeq ($(OSNAME), linux)
 endif
 
 # Darwin (same as linux...I don't know make well enough)
-ifeq ($(OSNAME), darwin)
+ifeq ($(OS), darwin)
     # GNU Compiler options needed to build it
     COMMON_FLAGS=-fno-strict-aliasing -fPIC -fno-omit-frame-pointer
     # Options that help find errors
@@ -172,7 +178,7 @@ ifeq ($(OSNAME), darwin)
 endif
 
 # Windows Microsoft C/C++ Optimizing Compiler Version 12
-ifeq ($(OSNAME), win32)
+ifeq ($(OS), win32)
     CC=cl
     # Compiler options needed to build it
     COMMON_FLAGS=-Gy -DWIN32
@@ -202,23 +208,23 @@ endif
 CFLAGS += -I.
 CFLAGS += -I../java_crw_demo
 
-ifeq ($(OSNAME), darwin)
+ifeq ($(OS), darwin)
   CFLAGS += -I/System/Library/Frameworks/JavaVM.framework/Headers
   CFLAGS += -I../bsd-port/jdk/src/share/javavm/export
   CFLAGS += -I../bsd-port/jdk/src/solaris/javavm/export
   CFLAGS += -I../bsd-port/jdk/src/share/demo/jvmti/java_crw_demo
   CFLAGS += -DSKIP_NPT
 else
-  CFLAGS += -I$(JDK)/include -I$(JDK)/include/$(OSNAME)
+  CFLAGS += -I$(JDK)/include -I$(JDK)/include/$(OS)
 endif
 
 # Default rule (build both native library and jar file)
 all: hprof_md.c $(LIBRARY) $(JARFILE)
 
 # Get platform specific hprof_md.c
-hprof_md.c:
-	rm -f $@
-	cp $(OSNAME)/hprof_md.c $@
+# hprof_md.c:
+	# rm -f $@
+	# cp $(OS)/hprof_md.c $@
 
 # Build native library
 $(LIBRARY): $(OBJECTS)
@@ -241,7 +247,7 @@ test: all
 	LD_LIBRARY_PATH=. $(JDK)/bin/java -agentlib:$(LIBNAME) -Xbootclasspath/a:./$(JARFILE) -version
 
 # Compilation rule only needed on Windows
-ifeq ($(OSNAME), win32)
+ifeq ($(OS), win32)
 %.obj: %.c
 	$(COMPILE.c) $<
 endif
